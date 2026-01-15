@@ -1,8 +1,23 @@
 <h3>Create an Account</h3>
-<form [formGroup]="authForm">
-    <input formControlName = "username" />
-    <input formControlName = "password" />
-    <input formControlName = "passwordConfirmation" />
+<form class="ui form" [formGroup]="authForm">
+    <div class="field">
+        <label>Username</label>
+        <input formControlName = "username" />
+    </div>
+    {{authForm.controls.username.errors | json}}
+    <div class="field">
+        <label>Password</label>
+        <input formControlName = "password" />
+    </div>
+    {{authForm.controls.password.errors | json}}
+    <div class="field">
+        <label>Password Confirmation</label>
+        <input formControlName = "passwordConfirmation" />
+    </div>
+    {{authForm.controls.passwordConfirmation.errors | json}}
+    <button class="ui submit button primary">
+        Submit
+    </button>
 </form>
  
 
@@ -10,4 +25,3 @@
 
 <hr>
 {{authForm.value | json}}
-{{authForm.errors | json}}
