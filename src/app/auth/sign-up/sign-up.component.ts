@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { JsonPipe } from '@angular/common';
+import { matchPassword } from '../validators/match-password.validator';
 
 @Component({
   selector: 'app-sign-up',
@@ -26,5 +27,6 @@ export class SignUpComponent {
       Validators.minLength(4),
       Validators.maxLength(20)
     ])
-  });
+  }, { validators: [matchPassword]}
+);
 }
