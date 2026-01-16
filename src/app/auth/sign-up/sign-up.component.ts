@@ -4,10 +4,11 @@ import { JsonPipe } from '@angular/common';
 import { matchPassword } from '../validators/match-password.validator';
 import { uniqueUsername } from '../validators/unique-username.validator';
 import { HttpBackend, HttpClient } from '@angular/common/http';
+import { InputComponent } from "../../Shared/input/input.component";
 
 @Component({
   selector: 'app-sign-up',
-  imports: [ReactiveFormsModule, JsonPipe],
+  imports: [ReactiveFormsModule, JsonPipe, InputComponent],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
