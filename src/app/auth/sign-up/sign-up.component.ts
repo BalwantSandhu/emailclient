@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
+import { JsonPipe, NgIf } from '@angular/common';
 import { matchPassword } from '../validators/match-password.validator';
 import { uniqueUsername } from '../validators/unique-username.validator';
 import { HttpBackend, HttpClient } from '@angular/common/http';
@@ -8,7 +8,7 @@ import { InputComponent } from "../../Shared/input/input.component";
 
 @Component({
   selector: 'app-sign-up',
-  imports: [ReactiveFormsModule, JsonPipe, InputComponent],
+  imports: [ReactiveFormsModule, JsonPipe, InputComponent, NgIf],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.css'
 })
