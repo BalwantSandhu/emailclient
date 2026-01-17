@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { JsonPipe, NgIf } from '@angular/common';
 import { matchPassword } from '../validators/match-password.validator';
 import { uniqueUsername } from '../validators/unique-username.validator';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { InputComponent } from "../../Shared/input/input.component";
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -39,22 +40,49 @@ export class SignUpComponent {
 
   // Version 2 without DI
   authForm = new FormGroup({
-    username: new FormControl('', [
-      Validators.required,
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required,
       Validators.minLength(3),
       Validators.maxLength(20),
       Validators.pattern(/^[a-z0-9]+$/)
-    ], [uniqueUsername()]),
-    password: new FormControl('', [
-      Validators.required,
+      ], 
+      asyncValidators: [uniqueUsername()]}),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required,
       Validators.minLength(4),
       Validators.maxLength(20)
-    ]),
-    passwordConfirmation: new FormControl('', [
-      Validators.required,
+    ]}),
+    passwordConfirmation: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required,
       Validators.minLength(4),
       Validators.maxLength(20)
-    ])
+    ]})
   }, { validators: [matchPassword]});
+
+  authService = inject(AuthService);
+
+  onSubmit(){
+    if(this.authForm.invalid){
+      return;
+    }
+
+    this.authService.signup(this.authForm.getRawValue())
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: (err) => {
+          if(!err.status){
+            this.authForm.setErrors({noConnection: true});
+          } else{
+            this.authForm.setErrors({unknownError: true});
+          }
+        }
+      });
+
+  }
 
 }
