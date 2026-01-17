@@ -1,12 +1,26 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref, RouterLinkActive } from '@angular/router';
+import { AuthService } from './auth/auth.service';
+import { NgIf } from "@angular/common";
+import { BehaviorSubject } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLinkWithHref, RouterLinkActive, NgIf, AsyncPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'emailclient';
+  signedin$: BehaviorSubject<boolean>;
+
+  constructor(private authService: AuthService){
+    this.signedin$ = this.authService.signedin$;
+  }
+
+  // ngOnInit(){
+  //   this.authService.signedin$.subscribe((signedin) => {
+  //     this.signedin = signedin;
+  //   })
+  // }
 }
