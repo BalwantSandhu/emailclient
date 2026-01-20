@@ -1,6 +1,6 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
+import { HttpEvent, HttpEventType, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { filter, Observable, tap } from "rxjs";
 
 @Injectable()
 export class AuthHttpInterceptor implements HttpInterceptor{
@@ -8,6 +8,23 @@ export class AuthHttpInterceptor implements HttpInterceptor{
     //     throw new Error("Method not implemented.");
     // }
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
-        return next.handle(req );
+        // Modify or log the outgoing request
+        const modifiedReq = req.clone({
+            withCredentials:true
+        })
+        return next.handle(modifiedReq);
+        
+        // .pipe(
+        //     filter(val => val.type === HttpEventType.Sent),
+        //     tap( val => {
+        //         // if(val.type === HttpEventType.Sent){
+        //             console.log('Request was sent to server');
+        //         // }
+
+        //         // if(val.type === HttpEventType.Response){
+        //         //     console.log('Got a response from API', val);
+        //         // }
+        //     })
+        // )
     }
 }
