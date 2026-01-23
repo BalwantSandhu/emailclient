@@ -14,6 +14,12 @@ export const routes: Routes = [
         .then(c => c.SignOutComponent)
     },
     {
+        path: 'inbox',
+        loadChildren: () =>
+        import('./Inbox/inbox.routes')
+        .then(c => c.inboxRoutes)
+    },
+    {
         path: '',
         loadComponent: () => 
         import('./auth/sign-in/sign-in.component')

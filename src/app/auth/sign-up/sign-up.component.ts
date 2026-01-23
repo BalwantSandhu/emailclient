@@ -6,6 +6,7 @@ import { uniqueUsername } from '../validators/unique-username.validator';
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { InputComponent } from "../../Shared/input/input.component";
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -63,6 +64,7 @@ export class SignUpComponent {
   }, { validators: [matchPassword]});
 
   authService = inject(AuthService);
+  router = inject(Router);
 
   onSubmit(){
     if(this.authForm.invalid){
@@ -72,7 +74,9 @@ export class SignUpComponent {
     this.authService.signup(this.authForm.getRawValue())
       .subscribe({
         next: (response) => {
-          console.log(response);
+          // Navigate to other route
+          this.router.navigateByUrl('/inbox');
+          //console.log(response);
         },
         error: (err) => {
           if(!err.status){
