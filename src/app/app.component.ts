@@ -12,7 +12,7 @@ import { AsyncPipe } from '@angular/common';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  signedin$: BehaviorSubject<boolean>;
+  signedin$: BehaviorSubject<boolean | null>;
 
   constructor(private authService: AuthService){
     this.signedin$ = this.authService.signedin$;

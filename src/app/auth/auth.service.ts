@@ -31,7 +31,7 @@ export class AuthService {
   http = inject(HttpClient);
 
   rootUrl = 'https://api.angular-email.com';
-  signedin$ = new BehaviorSubject(false); 
+  signedin$ = new BehaviorSubject<boolean | null>(null); 
 
   usernameAvailable(username:string){
     return this.http.post<{ available: boolean }>(`${this.rootUrl}/auth/username`,{
