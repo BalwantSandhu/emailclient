@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Email } from '../email';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { InputComponent } from "../../Shared/input/input.component";
@@ -17,6 +17,7 @@ export class EmailFormComponent {
     text: FormControl<string | null>;
   }>;
   @Input() email!: Email;
+  @Output() emailSubmit = new EventEmitter();
 
   ngOnInit() {
     const{ subject, from, to, text } = this.email;
@@ -26,6 +27,14 @@ export class EmailFormComponent {
       subject: new FormControl(subject, [Validators.required]),
       text: new FormControl(text, [Validators.required])
     });
+  }
+
+  onSubmit(){
+    if(this.emailForm.invalid){
+      return;
+    }
+
+    this.emailSubmit.emit(this.emailForm.value);// event emitted after button click which emits the value of for which are being watched by parent email create
   }
 
 }
