@@ -8,7 +8,7 @@
     <app-input [control]="emailForm.controls.subject" inputType="text" label="Subject">
     </app-input>
 
-    <app-input [control]="emailForm.controls.text" inputType="text" label="Content">
+    <app-input controlType="textarea" [control]="emailForm.controls.text" label="Content">
     </app-input>
 
     <button class="ui button primary">Send</button>

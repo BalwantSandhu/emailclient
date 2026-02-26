@@ -12,6 +12,10 @@ interface SignupResponse{
   username: string;
 }
 
+interface SigninResponse{
+  username: string;
+}
+
 interface SignedinResponse{
   authenticated: boolean;
   username: string;
@@ -32,6 +36,7 @@ export class AuthService {
 
   rootUrl = 'https://api.angular-email.com';
   signedin$ = new BehaviorSubject<boolean | null>(null); 
+  username = '';
 
   usernameAvailable(username:string){
     return this.http.post<{ available: boolean }>(`${this.rootUrl}/auth/username`,{
@@ -43,24 +48,27 @@ export class AuthService {
     return this.http.post<SignupResponse>(`${this.rootUrl}/auth/signup`,
       credentials
     ).pipe(
-      tap(() => {
+      tap((response) => {
         this.signedin$.next(true);
+        this.username = response.username;
       })
     );
   }
 
   checkAuth(){
     return this.http.get<SignedinResponse>(`${this.rootUrl}/auth/signedin`).pipe(
-      tap(({authenticated}) => {
+      tap(({authenticated, username}) => {
         this.signedin$.next(authenticated);
+        this.username = username;
       })
     );
   }
 
   signin(credentials: SigninCredentials) {
-    return this.http.post(`${this.rootUrl}/auth/signin`, credentials).pipe(
-      tap(() => {
+    return this.http.post<SigninResponse>(`${this.rootUrl}/auth/signin`, credentials).pipe(
+      tap(({username}) => {
         this.signedin$.next(true);
+        this.username = username;
       })
     )
   }
