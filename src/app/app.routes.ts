@@ -18,7 +18,7 @@ export const routes: Routes = [
         path: 'inbox',
         canLoad: [authGuard],
         loadChildren: () =>
-        import('./Inbox/inbox.routes')
+        import('./inbox/inbox.routes')
         .then(c => c.inboxRoutes)
     },
     {
