@@ -4,10 +4,11 @@ import { map, switchMap } from 'rxjs';
 import { EmailService } from '../email.service';
 import { Email } from '../email';
 import { NgIf } from "@angular/common";
+import { EmailReplyComponent } from "../email-reply/email-reply.component";
 
 @Component({
   selector: 'app-email-show',
-  imports: [NgIf],
+  imports: [NgIf, EmailReplyComponent],
   templateUrl: './email-show.component.html',
   styleUrl: './email-show.component.css'
 })
