@@ -1,51 +1,72 @@
 export default async function handler(req, res) {
-    const { path = "" } = req.query;
+    try {
+      const rawPath = req.query?.path ?? "";
+      const path = Array.isArray(rawPath) ? rawPath.join("/") : rawPath;
+      const url = `https://api.angular-email.com/${path}`;
   
-    const url = `https://api.angular-email.com/${path}`;
+      const method = req.method || "GET";
   
-    // Forward cookies from browser to upstream API
-    const upstreamHeaders = {
-      "content-type": req.headers["content-type"] || "application/json",
-      "cookie": req.headers.cookie || ""
-    };
+      // Forward headers that matter
+      const headers = {
+        // Forward cookies from the browser to the upstream API
+        cookie: req.headers.cookie || "",
+        // Forward content-type if present
+        "content-type": req.headers["content-type"] || "application/json",
+        // Optional: forward accept header
+        accept: req.headers.accept || "application/json, text/plain, */*",
+      };
   
-    // Read body (Vercel gives body already parsed sometimes)
-    const body =
-      req.method === "GET" || req.method === "HEAD"
-        ? undefined
-        : typeof req.body === "string"
-          ? req.body
-          : JSON.stringify(req.body ?? {});
+      // Build body for non-GET/HEAD requests
+      let body = undefined;
+      if (method !== "GET" && method !== "HEAD") {
+        if (typeof req.body === "string") {
+          body = req.body;
+        } else if (req.body == null) {
+          body = undefined;
+        } else {
+          body = JSON.stringify(req.body);
+        }
+      }
   
-    const upstreamResp = await fetch(url, {
-      method: req.method,
-      headers: upstreamHeaders,
-      body
-    });
+      const upstreamResp = await fetch(url, {
+        method,
+        headers,
+        body,
+      });
   
-    // Pass through status
-    res.status(upstreamResp.status);
+      // Pass status through
+      res.status(upstreamResp.status);
   
-    // If upstream sets cookies, re-set them on YOUR domain
-    const setCookie = upstreamResp.headers.get("set-cookie");
-    if (setCookie) {
-      // Important: set cookie for current domain so browser stores it
-      // Also ensure SameSite=None; Secure for HTTPS deployments
-      const rewritten = setCookie
-        .replace(/Domain=[^;]+;?/gi, "")
-        .replace(/SameSite=Lax/gi, "SameSite=None")
-        .replace(/SameSite=Strict/gi, "SameSite=None")
-        .includes("Secure")
-        ? setCookie
-        : setCookie + "; Secure";
+      // Forward ALL Set-Cookie headers (important: sess + sess.sig)
+      const setCookies =
+        typeof upstreamResp.headers.getSetCookie === "function"
+          ? upstreamResp.headers.getSetCookie()
+          : [];
   
-      res.setHeader("set-cookie", rewritten);
+      if (setCookies.length > 0) {
+        const rewritten = setCookies.map((c) =>
+          c
+            // Remove Domain attribute so cookies are stored for your Vercel domain
+            .replace(/;\s*Domain=[^;]+/gi, "")
+            // Ensure cross-site compatible in HTTPS contexts
+            .replace(/;\s*SameSite=Lax/gi, "; SameSite=None")
+            .replace(/;\s*SameSite=Strict/gi, "; SameSite=None")
+        );
+  
+        res.setHeader("set-cookie", rewritten);
+      }
+  
+      // Forward content-type
+      const contentType = upstreamResp.headers.get("content-type");
+      if (contentType) res.setHeader("content-type", contentType);
+  
+      // Read and forward response body
+      const text = await upstreamResp.text();
+      res.send(text);
+    } catch (err) {
+      res.status(500).json({
+        message: "Proxy error",
+        error: err?.message || String(err),
+      });
     }
-  
-    // Forward content-type
-    const contentType = upstreamResp.headers.get("content-type");
-    if (contentType) res.setHeader("content-type", contentType);
-  
-    const text = await upstreamResp.text();
-    res.send(text);
   }
