@@ -13,7 +13,9 @@ interface EmailSummary{
   providedIn: 'root'
 })
 export class EmailService {
-  rootUrl = 'https://api.angular-email.com'
+  rootUrl = location.hostname === 'localhost'
+    ? 'https://api.angular-email.com'
+    : '/api';
   constructor() { }
 
   http = inject(HttpClient);

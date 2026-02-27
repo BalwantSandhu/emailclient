@@ -34,7 +34,9 @@ export class AuthService {
   //constructor(private http: HttpClient) { }
   http = inject(HttpClient);
 
-  rootUrl = 'https://api.angular-email.com';
+  rootUrl = location.hostname === 'localhost'
+    ? 'https://api.angular-email.com'
+    : '/api';
   signedin$ = new BehaviorSubject<boolean | null>(null); 
   username = '';
 
